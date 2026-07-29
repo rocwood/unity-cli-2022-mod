@@ -1,4 +1,4 @@
-# Unity CLI 2022 技术修改适配
+# Unity CLI 2022 适配指南
 
 > [认识 Unity CLI：在终端里操作 Unity](https://unity.com/cn/blog/meet-the-unity-cli)
 >
@@ -6,16 +6,16 @@
 
 ---
 
-本仓库提供**经过最小修改的 Unity CLI 安装脚本**，用于解决官方安装地址被重定向到国区 CDN 并安装了老版本 `0.1.x`（缺少 `pipeline` / `command` 等命令）的问题。
+本仓库记录 Unity CLI 与 Unity 2022 的安装和适配方法。
 
-- **唯一功能改动**：当显式指定安装版本号时，跳过 SHA-256 校验。原因是官方“浮动清单”（`latest-beta.json`）里的校验值属于清单自身的（旧）版本，与你指定的新版本二进制并不匹配。二进制本身仍从 Unity **官方 CDN** 按版本号路径下载。
+- 部分网络环境下，安装地址会被重定向到国区 CDN，导致首次安装得到残血的旧版 `0.1.x`；可使用 CLI 自带的升级功能切换到指定版本。
 - **本仓库不包含**修改版的 `com.unity.pipeline` 包，也不分发任何 Unity 二进制文件。`com.unity.pipeline` 在 Unity 2022 下的适配方式见下文。
 
 ---
 
 ## 🛠️ 安装 Unity CLI
 
-### ✅ 官方安装方法
+### 1. 使用官方安装器
 
 ```
 # macOS / Linux
@@ -27,21 +27,19 @@ curl -fsSL https://public-cdn.cloud.unity3d.com/hub/prod/cli/install.sh | UNITY_
 $env:UNITY_CLI_CHANNEL='beta'; irm https://public-cdn.cloud.unity3d.com/hub/prod/cli/install.ps1 | iex
 ```
 
-安装完成后，运行 `unity --version` 确认版本。
-
-### ⚠️ 修改版安装方法（网络被重定向时）
-
-**如果安装后仍是旧版 `0.1.x`**，说明官方下载地址可能在你的网络里被重定向了。此时请改用「**指定版本号 + 本仓库的公开安装脚本**」，安装已验证的 `1.0.0-beta.2`：
+### 2. 检查并更新版本
 
 ```
-# macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/rocwood/unity-cli-2022-mod/main/cli/install.sh | UNITY_CLI_CHANNEL=beta UNITY_CLI_VERSION=1.0.0-beta.2 bash
+unity --version
 ```
 
+如果得到的是旧版 `0.1.x`，说明官方安装地址可能被重定向到国区 CDN，可直接升级到已验证的版本：
+
 ```
-# Windows (PowerShell)
-$env:UNITY_CLI_CHANNEL='beta'; & ([scriptblock]::Create((irm https://raw.githubusercontent.com/rocwood/unity-cli-2022-mod/main/cli/install.ps1))) -Target 1.0.0-beta.2
+unity upgrade -y --target 1.0.0-beta.3
 ```
+
+升级完成后再次运行 `unity --version`，确认当前版本为 `1.0.0-beta.3`。
 
 ---
 
@@ -62,10 +60,12 @@ unity pipeline install --project-path /path/to/your/unity/project
 `com.unity.pipeline` 官方包面向较新的 Unity 6.0+ 版本，Unity 2022 工程无法通过 CLI 安装或在 Package Manager 中添加。
 
 - 打开任意一款 AI 编程工具（如 Codex/Claude Code）
-- 让 AI 从 Unity Registry 抓取 `com.unity.pipeline` 源码放入工程
+- 让 AI 从 Unity Registry 获取 `com.unity.pipeline` 源码，并放入工程的 `Packages/com.unity.pipeline` 目录
 - 让 AI 修复 `PhysicsMaterial` 与 `Material.rawRenderQueue` 等 API 兼容性编译错误
 - 让 AI 将 `Runtime/Plugins/CodeAnalysis` 下 `Microsoft.CodeAnalysis*`、`System.Collections.Immutable`、`System.Reflection.Metadata` 的 DLL `.meta` 转为兼容的v2格式
 - 修复完成后即可在 Unity 2022 工程内正常使用。
+
+> **注意：**目录名必须严格为 `com.unity.pipeline`，不能带任何 `@` 后缀（如 `com.unity.pipeline@a1b2c3d4`）；否则即使 Pipeline Server 能够启动，CLI 仍可能无法识别。感谢 [@SetoKaiba](https://github.com/SetoKaiba) 在 [Issue #1](https://github.com/rocwood/unity-cli-2022-mod/issues/1) 中反馈这一问题。
 
 ---
 
@@ -85,9 +85,9 @@ unity pipeline install --project-path /path/to/your/unity/project
 
 ## ⚖️ 免责声明
 
-> 本仓库以 MIT 许可发布，但该许可仅适用于本仓库作者所做的修改及原创内容（安装脚本的改动、README 等文档）。本仓库中的 Unity CLI 安装脚本改编自 Unity Technologies 的官方安装器；Unity CLI 及其下载的二进制文件均为 Unity Technologies 的财产，仍受 Unity 适用的许可条款、服务条款及第三方许可证约束。
+> 本仓库以 MIT 许可发布，但该许可仅适用于本仓库作者所做的原创内容和适配说明。Unity CLI 及其下载的二进制文件均为 Unity Technologies 的财产，仍受 Unity 适用的许可条款、服务条款及第三方许可证约束。
 >
-> 本仓库包含对 Unity 官方 CLI 安装脚本的最小修改版本，作为在 Unity 2022 环境下的兼容性与技术方案评估参考。本仓库不包含 Unity Pipeline 包本身，也不分发任何 Unity 二进制文件——安装脚本仅从 Unity 官方 CDN 下载官方发布的二进制。
+> 本仓库用于记录 Unity CLI 在 Unity 2022 环境下的兼容性与技术方案评估，不包含 Unity Pipeline 包本身，也不分发任何 Unity 二进制文件。文中安装和升级命令均使用 Unity 官方提供的安装器、CLI 及下载源。
 >
 > 本仓库无意替代 Unity Technologies 提供的任何官方软件或软件包。原始软件、脚本及其中的源代码、二进制文件和其他受保护材料，仍受其适用的许可条款、服务条款及第三方许可证约束。
 >
