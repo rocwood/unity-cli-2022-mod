@@ -24,9 +24,9 @@ SOFTWARE.
 
 DISCLAIMER / 免责声明
 
-本仓库以 MIT 许可发布，但该许可仅适用于本仓库作者所做的修改及原创内容（安装脚本的改动、README 等文档）。本仓库中的 Unity CLI 安装脚本改编自 Unity Technologies 的官方安装器；Unity CLI 及其下载的二进制文件均为 Unity Technologies 的财产，仍受 Unity 适用的许可条款、服务条款及第三方许可证约束。
+本仓库以 MIT 许可发布，但该许可仅适用于本仓库作者所做的修改及原创内容。Unity CLI、安装脚本及其下载的二进制文件仍受 Unity 适用的许可条款、服务条款及第三方许可证约束。
 
-本仓库包含对 Unity 官方 CLI 安装脚本的最小修改版本，作为在 Unity 2022 环境下的兼容性与技术方案评估参考。本仓库不包含 Unity Pipeline 包本身，也不分发任何 Unity 二进制文件——安装脚本仅从 Unity 官方 CDN 下载官方发布的二进制。
+本仓库提供 Unity 2022 环境下的兼容性与技术方案评估参考。本仓库不包含 Unity Pipeline 包本身，也不分发任何 Unity 二进制文件。
 
 本仓库无意替代 Unity Technologies 提供的任何官方软件或软件包。原始软件、脚本及其中的源代码、二进制文件和其他受保护材料，仍受其适用的许可条款、服务条款及第三方许可证约束。
 
